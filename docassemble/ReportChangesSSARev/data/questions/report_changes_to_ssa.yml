@@ -1,0 +1,373 @@
+---
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+---
+metadata:
+  title: >-
+    Report changes to SSA
+  short title: >-
+    Report changes to SSA
+  description: |-
+    This interview helps someone report changes to SSA.
+  can_I_use_this_form: |
+    If you are a receive SSI or SSDI, you can use this interview to help complete a change request.
+  before_you_start: |
+    This interview will help you report changes to SSA.
+    
+    Before you get started:
+    
+    1. List of changes and dates 
+    1. Confirm if you receive SSI or SSDI, or both
+    
+    For how to determine if you are on SSI, SSDI or both click here
+    
+    When you are finished, you will need to:
+    
+    1. Review and sign 
+    1. Submit to SSA offices
+  maturity: production
+  estimated_completion_minutes: 10
+  estimated_completion_delta: 5
+  tags: []
+  authors:
+    - Tiffany Whiles
+  original_form:
+    - https://www.ssa.gov/forms/
+  original_form_published_on: 2022-06-01
+  help_page_url: >-
+    https://www.ssa.gov/ssi/reporting/changes
+  help_page_title: >-
+    SSA.gov Reporting Changes
+  allowed_courts: []
+  typical_role: "plaintiff"
+  al_weaver_version: "1.11.0"
+  generated_on: "2025-03-05"
+  languages:
+    - en
+  jurisdiction: NAM-US-US+MA
+  review_date: 2025-03-05
+  form_titles:
+    - Report changes to SSA
+  form_numbers:
+    - SSA-795
+  update_notes: |
+---
+code: |
+  # This controls the default country and list of states in address field questions
+  AL_DEFAULT_COUNTRY = "US"
+---
+code: |
+  # This controls the default state in address field questions
+  AL_DEFAULT_STATE = "MA"
+---
+code: |
+  github_repo_name =  'docassemble-ReportChangesToSsa'
+---
+code: |
+  interview_short_title = "Report changes to SSA"
+---
+code: |
+  al_form_type = "other_form" 
+---
+objects:
+  - users: ALPeopleList.using(there_are_any=True)
+---
+sections:
+  - review_report_changes_to_ssa: Review your answers
+---
+#################### Interview order #####################
+comment: |
+  Controls order and branching logic for questions specific to this form
+id: interview_order_report_changes_to_ssa
+code: |
+  # Set the allowed courts for this interview
+  nav.set_section("review_report_changes_to_ssa")
+  user_role = "plaintiff"
+  user_ask_role = "plaintiff"
+  users.gather()
+  set_parts(subtitle=str(users))
+  What_type_of_benefit_do_you_receive
+  What_kind_of_change_are_you_reporting
+  set_progress(20)
+  change_type_1
+  change_type_2
+  Relationship
+  set_progress(40)
+  clientphone_number
+  clientaddress_block
+  other_parties.gather()
+  set_progress(60)
+  signature_date
+  interview_order_report_changes_to_ssa = True
+---
+###################### Main order ######################
+comment: |
+  This block includes the logic for standalone interviews.
+  Delete mandatory: True to include in another interview
+mandatory: True
+code: |
+  al_intro_screen
+  report_changes_to_ssa_intro
+  interview_order_report_changes_to_ssa
+  signature_date
+  # Store anonymous data for analytics / statistics
+  store_variables_snapshot(
+      persistent=True,
+      data={
+          "zip": showifdef("users[0].address.zip"),
+          "reached_interview_end": True,
+      },
+  )
+  report_changes_to_ssa_download
+---
+id: Report_changes_to_SSA
+continue button field: report_changes_to_ssa_intro
+question: |
+  Report changes to SSA
+subquestion: |
+  This interview will help you report changes to SSA.
+  
+  Before you get started:
+  
+  1. List of changes and dates 
+  1. Confirm if you receive SSI or SSDI, or both
+  
+  For how to determine if you are on SSI, SSDI or both click here
+  
+  When you are finished, you will need to:
+  
+  1. Review and sign 
+  1. Submit to SSA offices
+
+  If you are a receive SSI or SSDI, you can use this interview to help complete a change request.
+
+  Most people take about 10 minutes to complete this interview.
+---
+id: What type of benefit do you receive
+question: |
+  What type of benefit do you receive
+continue button field: What_type_of_benefit_do_you_receive
+---
+id: What kind of change are you reporting
+question: |
+  What kind of change are you reporting
+continue button field: What_kind_of_change_are_you_reporting
+---
+id: Tell me about the job change
+question: |
+  Tell me about the job change
+subquestion: |
+  Look at your most recent pay stubs to answer this question.
+fields:
+  - "Employment changes": change_type_1
+    maxlength: 85
+---
+id: What changes do you need to report
+question: |
+  What changes do you need to report
+subquestion: |
+  Select anything that has changed. Include work for Uber, Lyft, or work for yourself such as odd jobs, any sources of additional money, or a change in living situation.
+  
+  Check if applicable.
+fields:
+  - "Other changes": change_type_2
+    maxlength: 85
+---
+id: What is your name
+question: |
+  What is your name
+subquestion: |
+  Name of wage earner, self-employeed person, or SSI recipient
+fields:
+  - "Wage earner or SSI recipient": Relationship
+    maxlength: 35
+---
+id: What is your phone number
+question: |
+  What is your phone number
+fields:
+  - "Client phone number": clientphone_number
+    maxlength: 35
+---
+id: What is your address
+question: |
+  What is your address
+fields:
+  - "Client address": clientaddress_block
+    maxlength: 85
+  - "Clientcity state": clientcity_state
+    maxlength: 42
+  - "Client zip": client_zip
+    maxlength: 42
+---
+id: preview report_changes_to_ssa
+question: |
+  Preview your form before you sign it
+subquestion: |
+  Here is a preview of the form you will sign on the next page.   
+  
+  ${ al_recipient_bundle.as_pdf(key='preview') }
+
+  Click the image to open it in a new tab. Click the "Edit answers" button
+  to edit your answers.
+
+  ${ action_button_html(url_action('review_report_changes_to_ssa'), label='Edit answers', color='info') }
+  
+  Remember to come back to this window to continue and sign your form.
+continue button field: report_changes_to_ssa_preview_question    
+---
+code: |
+  signature_fields = ['users[0].signature']
+---
+id: report changes to ssa review screen
+event: review_report_changes_to_ssa
+question: |
+  Review your answers
+review:
+  - Edit: users.revisit
+    button: |
+      **Users**
+
+      % for item in users:
+        * ${ item }
+      % endfor
+  - Edit: other_parties.revisit
+    button: |
+      **Other parties**
+
+      % for item in other_parties:
+        * ${ item }
+      % endfor
+  - Edit: Relationship
+    button: |
+      **Wage earner or SSI recipient**:
+      ${ Relationship }
+  - Edit: change_type_1
+    button: |
+      **Employment changes**:
+      ${ change_type_1 }
+  - Edit: change_type_2
+    button: |
+      **Other changes**:
+      ${ change_type_2 }
+  - Edit: signature_date
+    button: |
+      **Date of signature**:
+      ${ signature_date }
+  - Edit: clientphone_number
+    button: |
+      **Client phone number**:
+      ${ clientphone_number }
+  - Edit: clientaddress_block
+    button: |
+      **Client address**:
+      ${ clientaddress_block }
+  - Edit: clientcity_state
+    button: |
+      **Clientcity state**:
+      ${ clientcity_state }
+  - Edit: client_zip
+    button: |
+      **Client zip**:
+      ${ client_zip }
+---
+continue button field: users.revisit
+question: |
+  Edit users
+subquestion: |
+  ${ users.table }
+
+  ${ users.add_action() }
+---
+table: users.table
+rows: users
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+  - Signature: |
+      row_item.signature if defined("row_item.signature") else ""
+edit:
+  - name.first
+  - signature
+confirm: True
+
+---
+continue button field: other_parties.revisit
+question: |
+  Edit other_parties
+subquestion: |
+  ${ other_parties.table }
+
+  ${ other_parties.add_action() }
+---
+table: other_parties.table
+rows: other_parties
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+edit:
+  - name.first
+confirm: True
+
+---
+id: download report_changes_to_ssa
+event: report_changes_to_ssa_download
+question: |
+  All done
+subquestion: |
+  Thank you ${users}. Your form is ready to download and deliver.
+  
+  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
+
+  ${ action_button_html(url_action('review_report_changes_to_ssa'), label='Edit answers', color='info') }
+  
+  
+  ${ al_user_bundle.download_list_html() }
+  
+
+  ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
+
+progress: 100
+---
+# ALDocument objects specify the metadata for each template
+objects:
+  - report_changes_to_ssa_Post_interview_instructions: ALDocument.using(title="Instructions", filename="report_changes_to_ssa_next_steps.docx", enabled=True, has_addendum=False)
+  - report_changes_to_ssa_attachment: ALDocument.using(title="Report changes to SSA", filename="report_changes_to_ssa", enabled=True, has_addendum=False, )
+---
+# Bundles group the ALDocuments into separate downloads, such as for court and for the user
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[report_changes_to_ssa_Post_interview_instructions, report_changes_to_ssa_attachment], filename="report_changes_to_ssa", title="All forms to download for your records", enabled=True)
+  - al_recipient_bundle: ALDocumentBundle.using(elements=[report_changes_to_ssa_attachment],  filename="report_changes_to_ssa", title="All forms to file", enabled=True)
+---
+# Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
+# used for "preview" and "final" keys, and logic in the template checks the value of 
+# `i` to show or hide the user's signature
+attachment:
+  name: Post-interview-Instructions
+  filename: report_changes_to_ssa_next_steps
+  docx template file: report_changes_to_ssa_next_steps.docx
+  variable name: report_changes_to_ssa_Post_interview_instructions[i]
+  skip undefined: True
+  tagged pdf: True
+---
+attachment:
+  name: report changes to ssa
+  filename: report_changes_to_ssa
+  variable name: report_changes_to_ssa_attachment[i]
+  skip undefined: True
+  pdf template file: report_changes_to_ssa.pdf
+  fields:
+      - "user_name": ${ users[0] }
+      - "other_party": ${ other_parties[0] }
+      - "Relationship": ${ Relationship }
+      - "change_type_1": ${ change_type_1 }
+      - "change_type_2": ${ change_type_2 }
+      - "signature_date": ${ signature_date }
+      - "user_signature": ${ users[0].signature }
+      - "client.phone_number": ${ clientphone_number }
+      - "client.address_block()": ${ clientaddress_block }
+      - "client.city_state": ${ clientcity_state }
+      - "client_zip": ${ client_zip }
+
+
+
